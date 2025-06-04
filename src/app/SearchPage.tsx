@@ -3,10 +3,12 @@ import SearchForm from "../components/SearchForm";
 import SearchResults from "../components/SearchResults";
 import type { OrderValues, SearchResultsType, SortValues } from "../types";
 import { searchRepositories } from "../utils/search";
+import ErrorMessage from "../components/ErrorMessage";
 
 const SearchPage = () => {
   const [results, setResults] = useState<SearchResultsType | null>(null);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<boolean>(false);
   const [searchTerm, setSearchTerm] = useState("");
   const [searchIn, setSearchIn] = useState<string[]>([]);
 
@@ -27,13 +29,15 @@ const SearchPage = () => {
     page?: number;
   }) => {
     const query = `${searchTerm} in:${searchIn.join(",")}`;
-
+    setError(false);
     setLoading(true);
     try {
       const res = await searchRepositories(query, sort, order, page);
+
       setResults(res);
     } catch (error) {
       console.error(error);
+      setError(true);
     } finally {
       setLoading(false);
     }
@@ -65,14 +69,20 @@ const SearchPage = () => {
         onFormSubmit={handleFormSubmit}
         onFormReset={handleFormReset}
       />
-      <SearchResults
-        results={results}
-        loading={loading}
-        sort={sort}
-        order={order}
-        onChangeSort={handleSortChange}
-        onChangeOrder={handleOrderChange}
-      />
+      {error ? (
+        <ErrorMessage
+          onRetry={() => performSearch({ searchTerm, searchIn, sort, order })}
+        />
+      ) : (
+        <SearchResults
+          results={results}
+          loading={loading}
+          sort={sort}
+          order={order}
+          onChangeSort={handleSortChange}
+          onChangeOrder={handleOrderChange}
+        />
+      )}
     </div>
   );
 };
