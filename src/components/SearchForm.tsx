@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import {
   Box,
   Button,
@@ -16,6 +15,9 @@ import {
   searchSchema,
   type SearchFormData,
 } from "../formSchema";
+import { useState } from "react";
+
+import ArrayChipsInputWrapper from "./ArrayChipsInputWrapper";
 
 interface SearchFormProps {
   onFormSubmit: (searchTerm: string, searchIn: string[]) => void;
@@ -33,8 +35,20 @@ const SearchForm = ({ onFormSubmit, onFormReset }: SearchFormProps) => {
     defaultValues: {
       searchBy: "",
       searchIn: [],
+      advancedFilters: {
+        userName: "",
+        organization: "",
+        topic: [],
+        language: [],
+      },
     },
   });
+
+  const [showAdvanced, setShowAdvanced] = useState(false);
+
+  const toggleAdvanced = () => {
+    setShowAdvanced((prev) => !prev);
+  };
 
   const handleReset = () => {
     reset();
@@ -42,6 +56,7 @@ const SearchForm = ({ onFormSubmit, onFormReset }: SearchFormProps) => {
   };
 
   const onSubmit = async (data: SearchFormData) => {
+    console.log(data);
     onFormSubmit(data.searchBy, data.searchIn);
   };
 
@@ -149,11 +164,82 @@ const SearchForm = ({ onFormSubmit, onFormReset }: SearchFormProps) => {
             disabled={isSubmitting}
             color="warning"
             sx={{ mb: 2 }}
+            onClick={toggleAdvanced}
           >
-            Dropdown
+            {showAdvanced ? "Hide advanced" : "Show advanced"}
           </Button>
         </Stack>
       </Stack>
+      {showAdvanced && (
+        <Box
+          sx={{
+            mt: 2,
+            p: 2,
+            border: "1px solid",
+            borderColor: "divider",
+            borderRadius: 1,
+          }}
+        >
+          <Stack spacing={2}>
+            <Controller
+              name="advancedFilters.userName"
+              control={control}
+              render={({ field }) => (
+                <TextField
+                  {...field}
+                  label="User Name"
+                  size="small"
+                  error={!!errors?.advancedFilters?.userName}
+                  helperText={errors?.advancedFilters?.userName?.message || " "}
+                  fullWidth
+                />
+              )}
+            />
+            <Controller
+              name="advancedFilters.organization"
+              control={control}
+              render={({ field }) => (
+                <TextField
+                  {...field}
+                  label="Organization"
+                  size="small"
+                  error={!!errors?.advancedFilters?.organization}
+                  helperText={
+                    errors?.advancedFilters?.organization?.message || " "
+                  }
+                  fullWidth
+                />
+              )}
+            />
+            <Controller
+              name="advancedFilters.topic"
+              control={control}
+              render={({ field, fieldState: { error } }) => (
+                <ArrayChipsInputWrapper<string>
+                  field={field}
+                  label="Topic"
+                  getLabel={(topic) => topic}
+                  error={!!error}
+                  helperText={error?.message}
+                />
+              )}
+            />
+            <Controller
+              name="advancedFilters.language"
+              control={control}
+              render={({ field, fieldState: { error } }) => (
+                <ArrayChipsInputWrapper<string>
+                  field={field}
+                  label="Language"
+                  getLabel={(language) => language}
+                  error={!!error}
+                  helperText={error?.message}
+                />
+              )}
+            />
+          </Stack>
+        </Box>
+      )}
     </Box>
   );
 };
