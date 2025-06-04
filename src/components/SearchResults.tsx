@@ -5,17 +5,21 @@ import {
   Stack,
   ToggleButtonGroup,
   ToggleButton,
+  Pagination,
 } from "@mui/material";
 import type { OrderValues, SearchResultsType, SortValues } from "../types";
 import RepoCard from "./RepoCard";
+import { RESULTS_PER_PAGE } from "../constants";
 
 type SearchResultsProps = {
   results: SearchResultsType | null;
   loading: boolean;
   sort: SortValues;
   order: OrderValues;
+  page: number;
   onChangeSort: (newSort: SortValues) => void;
   onChangeOrder: (newOrder: OrderValues) => void;
+  onPageChange: (newPage: number) => void;
 };
 
 const SearchResults = ({
@@ -23,8 +27,10 @@ const SearchResults = ({
   loading,
   sort,
   order,
+  page,
   onChangeSort,
   onChangeOrder,
+  onPageChange,
 }: SearchResultsProps) => {
   if (loading) {
     return (
@@ -88,6 +94,17 @@ const SearchResults = ({
       {results.items.map((repo) => (
         <RepoCard key={repo.id} repo={repo} />
       ))}
+
+      <Box display="flex" justifyContent="center" mt={4}>
+        <Pagination
+          count={Math.ceil(results.total_count / RESULTS_PER_PAGE)}
+          page={page}
+          onChange={(_, value) => onPageChange(value)}
+          color="primary"
+          showFirstButton
+          showLastButton
+        />
+      </Box>
     </Box>
   );
 };

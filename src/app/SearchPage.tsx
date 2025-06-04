@@ -7,9 +7,10 @@ import ErrorMessage from "../components/ErrorMessage";
 
 const SearchPage = () => {
   const [results, setResults] = useState<SearchResultsType | null>(null);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<boolean>(false);
-  const [searchTerm, setSearchTerm] = useState("");
+  const [currentPage, setCurrentPage] = useState<number>(1);
+  const [searchTerm, setSearchTerm] = useState<string>("");
   const [searchIn, setSearchIn] = useState<string[]>([]);
 
   const [sort, setSort] = useState<SortValues>("default");
@@ -46,22 +47,26 @@ const SearchPage = () => {
   const handleFormSubmit = (term: string, fields: string[]) => {
     setSearchTerm(term);
     setSearchIn(fields);
-    performSearch({ searchTerm: term, searchIn: fields, sort, order });
+    setCurrentPage(1);
+    performSearch({ searchTerm: term, searchIn: fields, sort, order, page: 1 });
   };
 
   const handleFormReset = () => {
     setResults(null);
     setError(false);
+    setCurrentPage(1);
   };
 
   const handleSortChange = (newSort: SortValues) => {
     setSort(newSort);
-    performSearch({ searchTerm, searchIn, sort: newSort, order });
+    setCurrentPage(1);
+    performSearch({ searchTerm, searchIn, sort: newSort, order, page: 1 });
   };
 
   const handleOrderChange = (newOrder: OrderValues) => {
     setOrder(newOrder);
-    performSearch({ searchTerm, searchIn, sort, order: newOrder });
+    setCurrentPage(1);
+    performSearch({ searchTerm, searchIn, sort, order: newOrder, page: 1 });
   };
 
   return (
@@ -80,8 +85,13 @@ const SearchPage = () => {
           loading={loading}
           sort={sort}
           order={order}
+          page={currentPage}
           onChangeSort={handleSortChange}
           onChangeOrder={handleOrderChange}
+          onPageChange={(newPage) => {
+            setCurrentPage(newPage);
+            performSearch({ searchTerm, searchIn, sort, order, page: newPage });
+          }}
         />
       )}
     </div>
