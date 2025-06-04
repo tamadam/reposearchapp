@@ -7,6 +7,7 @@ import {
   ToggleButton,
 } from "@mui/material";
 import type { OrderValues, SearchResultsType, SortValues } from "../types";
+import RepoCard from "./RepoCard";
 
 type SearchResultsProps = {
   results: SearchResultsType | null;
@@ -85,10 +86,7 @@ const SearchResults = ({
         <Typography>Total results: {results.total_count}</Typography>
       </Stack>
       {results.items.map((repo) => (
-        <Box key={repo.id} mb={2}>
-          <Typography variant="h6">{repo.full_name}</Typography>
-          <Typography variant="body2">{repo.description}</Typography>
-        </Box>
+        <RepoCard key={repo.id} repo={repo} />
       ))}
     </Box>
   );

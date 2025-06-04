@@ -51,6 +51,7 @@ const SearchPage = () => {
 
   const handleFormReset = () => {
     setResults(null);
+    setError(false);
   };
 
   const handleSortChange = (newSort: SortValues) => {
