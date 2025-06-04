@@ -1,3 +1,4 @@
+import { Container } from "@mui/material";
 import Navbar from "../components/Navbar";
 import { Outlet } from "react-router-dom";
 
@@ -5,7 +6,9 @@ const Layout = () => {
   return (
     <>
       <Navbar />
-      <Outlet />
+      <Container maxWidth={false} sx={{ my: 2 }}>
+        <Outlet />
+      </Container>
     </>
   );
 };
