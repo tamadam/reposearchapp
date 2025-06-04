@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import {
   Box,
   Button,
@@ -16,12 +17,17 @@ import {
   type SearchFormData,
 } from "../formSchema";
 
-const SearchForm = () => {
+interface SearchFormProps {
+  onFormSubmit: (searchTerm: string, searchIn: string[]) => void;
+  onFormReset: () => void;
+}
+
+const SearchForm = ({ onFormSubmit, onFormReset }: SearchFormProps) => {
   const {
     reset,
     handleSubmit,
     control,
-    formState: { errors },
+    formState: { errors, isSubmitting },
   } = useForm<SearchFormData>({
     resolver: zodResolver(searchSchema),
     defaultValues: {
@@ -32,11 +38,11 @@ const SearchForm = () => {
 
   const handleReset = () => {
     reset();
+    onFormReset();
   };
 
-  const onSubmit = (data: SearchFormData) => {
-    console.log("Search term:", data.searchBy);
-    console.log("Search in:", data.searchIn);
+  const onSubmit = async (data: SearchFormData) => {
+    onFormSubmit(data.searchBy, data.searchIn);
   };
 
   return (
@@ -119,16 +125,31 @@ const SearchForm = () => {
             </Typography>
           </Stack>
           <Box component="div" sx={{ mb: 2 }}>
-            <Button variant="contained" type="submit" sx={{ mr: 2 }}>
+            <Button
+              variant="contained"
+              type="submit"
+              disabled={isSubmitting}
+              sx={{ mr: 2 }}
+            >
               Search
             </Button>
-            <Button onClick={handleReset} variant="contained" color="secondary">
+            <Button
+              onClick={handleReset}
+              variant="contained"
+              disabled={isSubmitting}
+              color="secondary"
+            >
               Reset
             </Button>
           </Box>
         </Stack>
         <Stack direction="row">
-          <Button variant="contained" color="warning" sx={{ mb: 2 }}>
+          <Button
+            variant="contained"
+            disabled={isSubmitting}
+            color="warning"
+            sx={{ mb: 2 }}
+          >
             Dropdown
           </Button>
         </Stack>

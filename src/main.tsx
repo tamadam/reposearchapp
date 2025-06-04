@@ -1,7 +1,7 @@
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
-import HomePage from "./app/HomePage";
+import SearchPage from "./app/SearchPage";
 import "@fontsource/roboto/300.css";
 import "@fontsource/roboto/400.css";
 import "@fontsource/roboto/500.css";
@@ -18,7 +18,7 @@ const router = createBrowserRouter([
     element: <Layout />,
     errorElement: <NotFoundPage />,
     children: [
-      { path: "/", element: <HomePage /> },
+      { path: "/", element: <SearchPage /> },
       { path: "/history", element: <HistoryPage /> },
       { path: "/page1", element: <Page1Page /> },
       { path: "/page2", element: <Page2Page /> },
