@@ -6,8 +6,11 @@ import { searchRepositories } from "../utils/search";
 import ErrorMessage from "../components/ErrorMessage";
 import type { SearchFormData } from "../formSchema";
 import { buildSearchQuery } from "../utils/buildQuery";
+import { useSearchHistory } from "../stores/searchHistory";
 
 const SearchPage = () => {
+  const { addSearch } = useSearchHistory();
+
   const [results, setResults] = useState<SearchResultsType | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<boolean>(false);
@@ -22,11 +25,13 @@ const SearchPage = () => {
     sort,
     order,
     page = 1,
+    formData,
   }: {
     query: string;
     sort: SortValues;
     order: OrderValues;
     page?: number;
+    formData?: SearchFormData;
   }) => {
     setError(false);
     setLoading(true);
@@ -34,6 +39,9 @@ const SearchPage = () => {
       const res = await searchRepositories(query, sort, order, page);
 
       setResults(res);
+      if (formData) {
+        addSearch(query, formData, res);
+      }
     } catch (error) {
       console.error(error);
       setError(true);
@@ -51,6 +59,7 @@ const SearchPage = () => {
       sort,
       order,
       page: 1,
+      formData: data,
     });
   };
 

@@ -17,6 +17,7 @@ type SearchResultsProps = {
   sort: SortValues;
   order: OrderValues;
   page: number;
+  fullVersion?: boolean;
   onChangeSort: (newSort: SortValues) => void;
   onChangeOrder: (newOrder: OrderValues) => void;
   onPageChange: (newPage: number) => void;
@@ -28,6 +29,7 @@ const SearchResults = ({
   sort,
   order,
   page,
+  fullVersion = true,
   onChangeSort,
   onChangeOrder,
   onPageChange,
@@ -61,50 +63,54 @@ const SearchResults = ({
 
   return (
     <Box mt={4}>
-      <Stack direction="row" spacing={4} alignItems="center" mb={2}>
-        <Typography>Sort by:</Typography>
-        <ToggleButtonGroup
-          value={sort}
-          exclusive
-          onChange={(_, value) => value && onChangeSort(value)}
-          size="small"
-        >
-          {sortButtons.map((sortButton) => (
-            <ToggleButton key={sortButton.value} value={sortButton.value}>
-              {sortButton.label}
-            </ToggleButton>
-          ))}
-        </ToggleButtonGroup>
-        <Typography>Order by:</Typography>
-        <ToggleButtonGroup
-          value={order}
-          exclusive
-          onChange={(_, value) => value && onChangeOrder(value)}
-          size="small"
-        >
-          {orderButtons.map((orderButton) => (
-            <ToggleButton key={orderButton.value} value={orderButton.value}>
-              {orderButton.label}
-            </ToggleButton>
-          ))}
-        </ToggleButtonGroup>
-        <Box component="div" flexGrow={1} />
-        <Typography>Total results: {results.total_count}</Typography>
-      </Stack>
+      {fullVersion && (
+        <Stack direction="row" spacing={4} alignItems="center" mb={2}>
+          <Typography>Sort by:</Typography>
+          <ToggleButtonGroup
+            value={sort}
+            exclusive
+            onChange={(_, value) => value && onChangeSort(value)}
+            size="small"
+          >
+            {sortButtons.map((sortButton) => (
+              <ToggleButton key={sortButton.value} value={sortButton.value}>
+                {sortButton.label}
+              </ToggleButton>
+            ))}
+          </ToggleButtonGroup>
+          <Typography>Order by:</Typography>
+          <ToggleButtonGroup
+            value={order}
+            exclusive
+            onChange={(_, value) => value && onChangeOrder(value)}
+            size="small"
+          >
+            {orderButtons.map((orderButton) => (
+              <ToggleButton key={orderButton.value} value={orderButton.value}>
+                {orderButton.label}
+              </ToggleButton>
+            ))}
+          </ToggleButtonGroup>
+          <Box component="div" flexGrow={1} />
+          <Typography>Total results: {results.total_count}</Typography>
+        </Stack>
+      )}
       {results.items.map((repo) => (
         <RepoCard key={repo.id} repo={repo} />
       ))}
 
-      <Box display="flex" justifyContent="center" mt={4}>
-        <Pagination
-          count={Math.ceil(results.total_count / RESULTS_PER_PAGE)}
-          page={page}
-          onChange={(_, value) => onPageChange(value)}
-          color="primary"
-          showFirstButton
-          showLastButton
-        />
-      </Box>
+      {fullVersion && (
+        <Box display="flex" justifyContent="center" mt={4}>
+          <Pagination
+            count={Math.ceil(results.total_count / RESULTS_PER_PAGE)}
+            page={page}
+            onChange={(_, value) => onPageChange(value)}
+            color="primary"
+            showFirstButton
+            showLastButton
+          />
+        </Box>
+      )}
     </Box>
   );
 };
