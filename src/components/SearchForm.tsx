@@ -18,6 +18,7 @@ import {
 import { useState } from "react";
 
 import ArrayChipsInputWrapper from "./ArrayChipsInputWrapper";
+import { NumericFilter } from "./FilterNumberInput";
 
 interface SearchFormProps {
   onFormSubmit: (searchTerm: string, searchIn: string[]) => void;
@@ -28,6 +29,7 @@ const SearchForm = ({ onFormSubmit, onFormReset }: SearchFormProps) => {
   const {
     reset,
     handleSubmit,
+    setValue,
     control,
     formState: { errors, isSubmitting },
   } = useForm<SearchFormData>({
@@ -40,6 +42,18 @@ const SearchForm = ({ onFormSubmit, onFormReset }: SearchFormProps) => {
         organization: "",
         topic: [],
         language: [],
+        starsFilter: {
+          mode: "gt",
+          value: undefined,
+          min: undefined,
+          max: undefined,
+        },
+        sizeFilter: {
+          mode: "gt",
+          value: undefined,
+          min: undefined,
+          max: undefined,
+        },
       },
     },
   });
@@ -62,6 +76,8 @@ const SearchForm = ({ onFormSubmit, onFormReset }: SearchFormProps) => {
 
   return (
     <Box component="form" onSubmit={handleSubmit(onSubmit)} sx={{ mt: 4 }}>
+      <pre>{JSON.stringify(errors, null, 2)}</pre>
+
       <Stack
         direction="row"
         spacing={6}
@@ -236,6 +252,18 @@ const SearchForm = ({ onFormSubmit, onFormReset }: SearchFormProps) => {
                   helperText={error?.message}
                 />
               )}
+            />
+            <NumericFilter
+              control={control}
+              setValue={setValue}
+              name="advancedFilters.starsFilter"
+              label="Stars"
+            />
+            <NumericFilter
+              control={control}
+              setValue={setValue}
+              name="advancedFilters.sizeFilter"
+              label="Size"
             />
           </Stack>
         </Box>

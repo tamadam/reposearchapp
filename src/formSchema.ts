@@ -36,6 +36,22 @@ export const searchSchema = z.object({
       .refine((topics) => topics.every((topic) => topic.length >= 3), {
         message: "All languages must be at least 3 characters",
       }),
+    starsFilter: z
+      .object({
+        mode: z.enum(["equal", "gt", "lt", "between"]).optional(),
+        value: z.coerce.number().optional(),
+        min: z.coerce.number().optional(),
+        max: z.coerce.number().optional(),
+      })
+      .optional(),
+    sizeFilter: z
+      .object({
+        mode: z.enum(["equal", "gt", "lt", "between"]).optional(),
+        value: z.coerce.number().optional(),
+        min: z.coerce.number().optional(),
+        max: z.coerce.number().optional(),
+      })
+      .optional(),
   }),
 });
 
