@@ -4,6 +4,7 @@ import {
   IconButton,
   Menu,
   MenuItem,
+  styled,
   Toolbar,
   Typography,
 } from "@mui/material";
@@ -16,6 +17,26 @@ type NavMenuItem = {
   label: string;
   href: string;
 };
+
+const WhiteNavLink = styled(NavLink)(({ theme }) => ({
+  color: "rgba(255, 255, 255, 0.8)",
+  textDecoration: "none",
+  margin: "0 0.5rem",
+  padding: "0.5rem 1rem",
+  borderRadius: "4px",
+  transition: "all 0.3s ease",
+  "&:hover": {
+    color: theme.palette.common.white,
+    backgroundColor: "rgba(255, 255, 255, 0.1)",
+    transform: "translateY(-2px)",
+  },
+  "&.active": {
+    color: theme.palette.common.white,
+    backgroundColor: "rgba(255, 255, 255, 0.2)",
+    fontWeight: "bold",
+    boxShadow: "0 2px 4px rgba(0, 0, 0, 0.2)",
+  },
+}));
 
 const Navbar = () => {
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
@@ -39,36 +60,54 @@ const Navbar = () => {
   };
 
   return (
-    <AppBar position="sticky" color="info">
+    <AppBar
+      position="sticky"
+      color="info"
+      sx={{
+        background: "linear-gradient(135deg, #0288d1 0%, #01579b 100%)",
+        boxShadow: "0 4px 20px rgba(0, 0, 0, 0.2)",
+        borderBottom: "1px solid rgba(255, 255, 255, 0.1)",
+      }}
+    >
       <Toolbar>
         <Typography
           variant="h6"
           component="div"
-          sx={{ mr: 2, textTransform: "uppercase" }}
+          sx={{
+            mr: 4,
+            textTransform: "uppercase",
+            fontWeight: "bold",
+            letterSpacing: "1px",
+            background: "linear-gradient(to right, #ffffff, #e0f7fa)",
+            WebkitBackgroundClip: "text",
+            WebkitTextFillColor: "transparent",
+            textShadow: "0 2px 4px rgba(0, 0, 0, 0.2)",
+          }}
         >
           Repo Search App
         </Typography>
-
-        {navbarItems.map((navbarItem) => (
-          <NavLink
-            key={navbarItem.id}
-            to={navbarItem.href}
-            style={{ textDecoration: "none" }}
-          >
-            {({ isActive }) => (
-              <Typography
-                variant="button"
-                sx={{
-                  fontStyle: "italic",
-                  padding: "1rem",
-                  borderBottom: isActive ? "2px solid" : "none",
-                }}
-              >
-                {navbarItem.label}
-              </Typography>
-            )}
-          </NavLink>
-        ))}
+        <Box>
+          {navbarItems.map((navbarItem) => (
+            <WhiteNavLink
+              key={navbarItem.id}
+              to={navbarItem.href}
+              style={{ textDecoration: "none" }}
+            >
+              {({ isActive }) => (
+                <Typography
+                  variant="button"
+                  sx={{
+                    padding: "1rem",
+                    borderBottom: isActive ? "2px solid" : "none",
+                    fontWeight: isActive ? "700" : "",
+                  }}
+                >
+                  {navbarItem.label}
+                </Typography>
+              )}
+            </WhiteNavLink>
+          ))}
+        </Box>
 
         <Box sx={{ flexGrow: 1 }} />
         <IconButton
@@ -78,6 +117,12 @@ const Navbar = () => {
           aria-controls="menu-appbar"
           aria-haspopup="true"
           onClick={handleOpenNavMenu}
+          sx={{
+            "&:hover": {
+              backgroundColor: "rgba(255, 255, 255, 0.1)",
+              transform: "scale(1.1)",
+            },
+          }}
         >
           <MenuIcon />
         </IconButton>

@@ -1,4 +1,4 @@
-import { Box, Chip } from "@mui/material";
+import { Box, Chip, Typography } from "@mui/material";
 import { useEffect, useState, type ReactNode } from "react";
 
 interface ArrayChipsInputProps<T> {
@@ -18,6 +18,7 @@ const ArrayChipsInput = <T,>({
   getKey,
 }: ArrayChipsInputProps<T>) => {
   const [showAll, setShowAll] = useState(false);
+  const [hoveredChip, setHoveredChip] = useState<number | null>(null);
 
   useEffect(() => {
     if (showAll && items.length <= maxDisplay) {
@@ -32,50 +33,64 @@ const ArrayChipsInput = <T,>({
   return (
     <Box
       sx={{
-        display: "grid",
-        gridTemplateColumns: "1fr 1fr",
-        rowGap: 1,
-        columnGap: 1,
+        display: "flex",
+        flexWrap: "wrap",
+        gap: 1,
         mt: 1,
         maxWidth,
+        alignItems: "center",
       }}
     >
       {displayItems.map((item, index) => (
         <Chip
           key={getKey ? getKey(item, index) : index}
-          label={getLabel(item)}
+          label={
+            <Typography variant="body2" component="span">
+              {getLabel(item)}
+            </Typography>
+          }
           onDelete={() => onDelete(index)}
+          onMouseEnter={() => setHoveredChip(index)}
+          onMouseLeave={() => setHoveredChip(null)}
           sx={{
+            backgroundColor: (theme) =>
+              hoveredChip === index
+                ? theme.palette.primary.light
+                : theme.palette.primary.main,
+            color: "common.white",
+            borderRadius: 1,
+            transition: "all 0.2s ease",
+            transform: hoveredChip === index ? "scale(1.05)" : "scale(1)",
+            boxShadow: (theme) =>
+              hoveredChip === index ? theme.shadows[2] : "none",
             "& .MuiChip-deleteIcon": {
-              opacity: 0,
-              transition: "opacity 0.3s",
+              color: "common.white",
+              opacity: hoveredChip === index ? 1 : 0,
+              transition: "opacity 0.2s ease",
+              "&:hover": {
+                color: "common.white",
+              },
             },
-            "&:hover .MuiChip-deleteIcon": {
-              opacity: 1,
+            "&:hover": {
+              backgroundColor: (theme) => theme.palette.primary.dark,
             },
           }}
         />
       ))}
 
       {!showAll && hiddenCount > 0 && (
-        <Box
+        <Chip
+          label={`+${hiddenCount}`}
           onClick={() => setShowAll(true)}
           sx={{
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            fontWeight: "bold",
-            color: "primary.main",
-            fontSize: "0.875rem",
+            backgroundColor: (theme) => theme.palette.grey[200],
+            color: (theme) => theme.palette.text.secondary,
             cursor: "pointer",
-            userSelect: "none",
             "&:hover": {
-              textDecoration: "underline",
+              backgroundColor: (theme) => theme.palette.grey[300],
             },
           }}
-        >
-          ...{hiddenCount} more
-        </Box>
+        />
       )}
     </Box>
   );
