@@ -4,32 +4,30 @@ import SearchResults from "../components/SearchResults";
 import type { OrderValues, SearchResultsType, SortValues } from "../types";
 import { searchRepositories } from "../utils/search";
 import ErrorMessage from "../components/ErrorMessage";
+import type { SearchFormData } from "../formSchema";
+import { buildSearchQuery } from "../utils/buildQuery";
 
 const SearchPage = () => {
   const [results, setResults] = useState<SearchResultsType | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<boolean>(false);
   const [currentPage, setCurrentPage] = useState<number>(1);
-  const [searchTerm, setSearchTerm] = useState<string>("");
-  const [searchIn, setSearchIn] = useState<string[]>([]);
+  const [searchQuery, setSearchQuery] = useState<string>("");
 
   const [sort, setSort] = useState<SortValues>("default");
   const [order, setOrder] = useState<OrderValues>("desc");
 
   const performSearch = async ({
-    searchTerm,
-    searchIn,
+    query,
     sort,
     order,
     page = 1,
   }: {
-    searchTerm: string;
-    searchIn: string[];
+    query: string;
     sort: SortValues;
     order: OrderValues;
     page?: number;
   }) => {
-    const query = `${searchTerm} in:${searchIn.join(",")}`;
     setError(false);
     setLoading(true);
     try {
@@ -44,11 +42,16 @@ const SearchPage = () => {
     }
   };
 
-  const handleFormSubmit = (term: string, fields: string[]) => {
-    setSearchTerm(term);
-    setSearchIn(fields);
+  const handleFormSubmit = (data: SearchFormData) => {
+    const query = buildSearchQuery(data);
+    setSearchQuery(query);
     setCurrentPage(1);
-    performSearch({ searchTerm: term, searchIn: fields, sort, order, page: 1 });
+    performSearch({
+      query,
+      sort,
+      order,
+      page: 1,
+    });
   };
 
   const handleFormReset = () => {
@@ -60,13 +63,23 @@ const SearchPage = () => {
   const handleSortChange = (newSort: SortValues) => {
     setSort(newSort);
     setCurrentPage(1);
-    performSearch({ searchTerm, searchIn, sort: newSort, order, page: 1 });
+    performSearch({
+      query: searchQuery,
+      sort: newSort,
+      order,
+      page: 1,
+    });
   };
 
   const handleOrderChange = (newOrder: OrderValues) => {
     setOrder(newOrder);
     setCurrentPage(1);
-    performSearch({ searchTerm, searchIn, sort, order: newOrder, page: 1 });
+    performSearch({
+      query: searchQuery,
+      sort,
+      order: newOrder,
+      page: 1,
+    });
   };
 
   return (
@@ -77,7 +90,13 @@ const SearchPage = () => {
       />
       {error ? (
         <ErrorMessage
-          onRetry={() => performSearch({ searchTerm, searchIn, sort, order })}
+          onRetry={() =>
+            performSearch({
+              query: searchQuery,
+              sort,
+              order,
+            })
+          }
         />
       ) : (
         <SearchResults
@@ -90,7 +109,12 @@ const SearchPage = () => {
           onChangeOrder={handleOrderChange}
           onPageChange={(newPage) => {
             setCurrentPage(newPage);
-            performSearch({ searchTerm, searchIn, sort, order, page: newPage });
+            performSearch({
+              query: searchQuery,
+              sort,
+              order,
+              page: newPage,
+            });
           }}
         />
       )}

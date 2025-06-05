@@ -22,7 +22,7 @@ import { NumericFilter } from "./NumericFilter";
 import { DateFilter } from "./DateFilter";
 
 interface SearchFormProps {
-  onFormSubmit: (searchTerm: string, searchIn: string[]) => void;
+  onFormSubmit: (data: SearchFormData) => void;
   onFormReset: () => void;
 }
 
@@ -78,8 +78,7 @@ const SearchForm = ({ onFormSubmit, onFormReset }: SearchFormProps) => {
   };
 
   const onSubmit = async (data: SearchFormData) => {
-    console.log(data);
-    onFormSubmit(data.searchBy, data.searchIn);
+    onFormSubmit(data);
   };
 
   return (
@@ -194,7 +193,7 @@ const SearchForm = ({ onFormSubmit, onFormReset }: SearchFormProps) => {
           </Button>
         </Stack>
       </Stack>
-      {showAdvanced && (
+      <Box component="div" display={showAdvanced ? "block" : "none"}>
         <Box
           sx={{
             mt: 2,
@@ -287,7 +286,7 @@ const SearchForm = ({ onFormSubmit, onFormReset }: SearchFormProps) => {
             />
           </Stack>
         </Box>
-      )}
+      </Box>
     </Box>
   );
 };
