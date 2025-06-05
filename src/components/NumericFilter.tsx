@@ -8,6 +8,8 @@ interface NumericFilterProps {
   setValue: UseFormSetValue<any>;
   name: string;
   label: string;
+  errors: any;
+  trigger: any;
 }
 
 export const NumericFilter = (props: NumericFilterProps) => (

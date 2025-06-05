@@ -31,6 +31,7 @@ const SearchForm = ({ onFormSubmit, onFormReset }: SearchFormProps) => {
     reset,
     handleSubmit,
     setValue,
+    trigger,
     control,
     formState: { errors, isSubmitting },
   } = useForm<SearchFormData>({
@@ -265,18 +266,24 @@ const SearchForm = ({ onFormSubmit, onFormReset }: SearchFormProps) => {
               setValue={setValue}
               name="advancedFilters.starsFilter"
               label="Stars"
+              errors={errors}
+              trigger={trigger}
             />
             <NumericFilter
               control={control}
               setValue={setValue}
               name="advancedFilters.sizeFilter"
               label="Size"
+              errors={errors}
+              trigger={trigger}
             />
             <DateFilter
               control={control}
               setValue={setValue}
               name="advancedFilters.createdDateFilter"
               label="Created"
+              errors={errors}
+              trigger={trigger}
             />
           </Stack>
         </Box>

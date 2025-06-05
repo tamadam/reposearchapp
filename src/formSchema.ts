@@ -43,6 +43,16 @@ export const searchSchema = z.object({
         min: z.coerce.number().optional(),
         max: z.coerce.number().optional(),
       })
+      .refine(
+        (data) =>
+          data.mode !== "between" ||
+          data.min === undefined ||
+          data.max === undefined ||
+          data.min < data.max,
+        {
+          message: "Min must be less than Max",
+        }
+      )
       .optional(),
     sizeFilter: z
       .object({
@@ -51,6 +61,16 @@ export const searchSchema = z.object({
         min: z.coerce.number().optional(),
         max: z.coerce.number().optional(),
       })
+      .refine(
+        (data) =>
+          data.mode !== "between" ||
+          data.min === undefined ||
+          data.max === undefined ||
+          data.min < data.max,
+        {
+          message: "Min must be less than Max",
+        }
+      )
       .optional(),
     createdDateFilter: z
       .object({
@@ -61,6 +81,16 @@ export const searchSchema = z.object({
         min: z.string().datetime().optional(),
         max: z.string().datetime().optional(),
       })
+      .refine(
+        (data) =>
+          data.mode !== "between" ||
+          !data.min ||
+          !data.max ||
+          new Date(data.min) < new Date(data.max),
+        {
+          message: "Start date must be before end date",
+        }
+      )
       .optional(),
   }),
 });

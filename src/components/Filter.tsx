@@ -40,6 +40,8 @@ interface FilterProps {
   label: string;
   type: FilterType;
   options?: FilterOption[];
+  errors: any;
+  trigger: any;
 }
 
 const getFieldPath = (base: string, field: string) => `${base}.${field}`;
@@ -66,6 +68,8 @@ const Filter = ({
   label,
   type,
   options = type === "date" ? dateOptions : numericOptions,
+  errors,
+  trigger,
 }: FilterProps) => {
   const mode = useWatch({ control, name: getFieldPath(name, "mode") });
 
@@ -77,9 +81,18 @@ const Filter = ({
       setValue(getFieldPath(name, "min"), undefined);
       setValue(getFieldPath(name, "max"), undefined);
     }
+
+    trigger(name);
   };
 
-  const renderInputField = (field: any, fieldLabel: string) => {
+  const renderInputField = (
+    field: any,
+    fieldLabel: string,
+    name: string,
+    displayErrorMessage = true
+  ) => {
+    const [category, fieldName] = name.split(".");
+
     if (type === "number") {
       return (
         <TextField
@@ -91,6 +104,12 @@ const Filter = ({
             const inputValue = e.target.value;
             field.onChange(inputValue === "" ? undefined : Number(inputValue));
           }}
+          onBlur={() => trigger(name)}
+          error={!!errors?.[category || ""]?.[fieldName || ""]}
+          helperText={
+            displayErrorMessage &&
+            errors?.[category || ""]?.[fieldName || ""]?.message
+          }
         />
       );
     }
@@ -102,6 +121,7 @@ const Filter = ({
         onChange={(newValue: Dayjs | null) => {
           field.onChange(newValue ? newValue.toISOString() : undefined);
         }}
+        onClose={() => trigger(name)}
         enableAccessibleFieldDOMStructure={false}
         slotProps={{
           textField: {
@@ -109,6 +129,10 @@ const Filter = ({
               readOnly: true,
             },
             onKeyDown: (e) => e.preventDefault(),
+            error: !!errors?.[category || ""]?.[fieldName || ""],
+            helperText:
+              displayErrorMessage &&
+              errors?.[category || ""]?.[fieldName || ""]?.message,
           },
         }}
       />
@@ -163,9 +187,7 @@ const Filter = ({
         <Controller
           name={getFieldPath(name, "value")}
           control={control}
-          render={({ field }) =>
-            renderInputField(field, label.replace(" Filter", ""))
-          }
+          render={({ field }) => renderInputField(field, label, name)}
         />
       )}
 
@@ -174,12 +196,12 @@ const Filter = ({
           <Controller
             name={getFieldPath(name, "min")}
             control={control}
-            render={({ field }) => renderInputField(field, "From")}
+            render={({ field }) => renderInputField(field, "From", name)}
           />
           <Controller
             name={getFieldPath(name, "max")}
             control={control}
-            render={({ field }) => renderInputField(field, "To")}
+            render={({ field }) => renderInputField(field, "To", name, false)}
           />
         </Stack>
       )}

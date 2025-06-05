@@ -8,6 +8,8 @@ interface DateFilterProps {
   setValue: UseFormSetValue<any>;
   name: string;
   label: string;
+  errors: any;
+  trigger: any;
 }
 
 export const DateFilter = (props: DateFilterProps) => (
