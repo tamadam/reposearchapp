@@ -18,7 +18,8 @@ import {
 import { useState } from "react";
 
 import ArrayChipsInputWrapper from "./ArrayChipsInputWrapper";
-import { NumericFilter } from "./FilterNumberInput";
+import { NumericFilter } from "./NumericFilter";
+import { DateFilter } from "./DateFilter";
 
 interface SearchFormProps {
   onFormSubmit: (searchTerm: string, searchIn: string[]) => void;
@@ -50,6 +51,12 @@ const SearchForm = ({ onFormSubmit, onFormReset }: SearchFormProps) => {
         },
         sizeFilter: {
           mode: "gt",
+          value: undefined,
+          min: undefined,
+          max: undefined,
+        },
+        createdDateFilter: {
+          mode: "onOrBefore",
           value: undefined,
           min: undefined,
           max: undefined,
@@ -264,6 +271,12 @@ const SearchForm = ({ onFormSubmit, onFormReset }: SearchFormProps) => {
               setValue={setValue}
               name="advancedFilters.sizeFilter"
               label="Size"
+            />
+            <DateFilter
+              control={control}
+              setValue={setValue}
+              name="advancedFilters.createdDateFilter"
+              label="Created"
             />
           </Stack>
         </Box>

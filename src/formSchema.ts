@@ -52,6 +52,16 @@ export const searchSchema = z.object({
         max: z.coerce.number().optional(),
       })
       .optional(),
+    createdDateFilter: z
+      .object({
+        mode: z
+          .enum(["before", "onOrBefore", "after", "onOrAfter", "between"])
+          .optional(),
+        value: z.string().datetime().optional(),
+        min: z.string().datetime().optional(),
+        max: z.string().datetime().optional(),
+      })
+      .optional(),
   }),
 });
 
