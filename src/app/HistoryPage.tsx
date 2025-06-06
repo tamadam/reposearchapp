@@ -1,9 +1,22 @@
-import { IconButton, Typography, Divider, Box, Button } from "@mui/material";
+import {
+  IconButton,
+  Typography,
+  Divider,
+  Box,
+  Button,
+  Chip,
+  List,
+  ListItem,
+  ListItemText,
+  Paper,
+  Stack,
+} from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { useSearchHistory } from "../stores/searchHistory";
 import { useState } from "react";
 import SearchResults from "../components/SearchResults";
 import { ResizableBox } from "react-resizable";
+import { formatQuery, type FormattedQuery } from "../utils/formatQuery";
 
 const HistoryPage = () => {
   const { searches, removeSearch, clearHistory } = useSearchHistory();
@@ -43,10 +56,16 @@ const HistoryPage = () => {
             padding: 2,
           }}
         >
-          <Typography variant="h5" gutterBottom>
+          <Typography
+            variant="h5"
+            sx={{ textTransform: "uppercase" }}
+            gutterBottom
+          >
             Search History
           </Typography>
-
+          <Typography sx={{ mb: 2 }}>
+            Total requests: {searches.length}
+          </Typography>
           {searches.length === 0 ? (
             <Typography>No search history yet</Typography>
           ) : (
@@ -59,7 +78,6 @@ const HistoryPage = () => {
               >
                 Clear All
               </Button>
-
               {searches.map((search) => (
                 <Box
                   key={search.id}
@@ -79,12 +97,7 @@ const HistoryPage = () => {
                   }}
                   onClick={() => setSelectedId(search.id)}
                 >
-                  <Box>
-                    <Typography variant="body1">{search.query}</Typography>
-                    <Typography variant="caption" color="text.secondary">
-                      {new Date(search.timestamp).toLocaleString()}
-                    </Typography>
-                  </Box>
+                  <QueryDetails query={formatQuery(search.query || "")} />
 
                   <IconButton
                     edge="end"
@@ -132,3 +145,68 @@ const HistoryPage = () => {
 };
 
 export default HistoryPage;
+
+const QueryDetails = ({ query }: { query: FormattedQuery }) => {
+  return (
+    <Box>
+      <Typography variant="subtitle1" gutterBottom>
+        <strong>Raw Query:</strong>
+      </Typography>
+      <Paper elevation={0} sx={{ p: 1.5, mb: 2, bgcolor: "grey.100" }}>
+        <Typography variant="body2" fontFamily="monospace">
+          {query.rawQuery}
+        </Typography>
+      </Paper>
+
+      <Typography variant="subtitle1" gutterBottom>
+        <strong>Search Details:</strong>
+      </Typography>
+
+      <List dense sx={{ mb: 2 }}>
+        {query.searchTerm && (
+          <ListItem>
+            <ListItemText
+              primary="Search Term"
+              secondary={query.searchTerm}
+              slotProps={{ secondary: { fontFamily: "monospace" } }}
+            />
+          </ListItem>
+        )}
+
+        {query.searchIn && query.searchIn.length > 0 && (
+          <ListItem>
+            <ListItemText
+              primary="Search In"
+              secondary={
+                <Stack direction="row" spacing={1} sx={{ mt: 0.5 }}>
+                  {query.searchIn.map((field, i) => (
+                    <Chip key={i} label={field} size="small" />
+                  ))}
+                </Stack>
+              }
+            />
+          </ListItem>
+        )}
+      </List>
+
+      {query.filters.length > 0 && (
+        <>
+          <Typography variant="subtitle1" gutterBottom>
+            <strong>Filters:</strong>
+          </Typography>
+          <List dense>
+            {query.filters.map((filter, index) => (
+              <ListItem key={index}>
+                <ListItemText
+                  primary={filter.key}
+                  secondary={filter.value}
+                  slotProps={{ secondary: { fontFamily: "monospace" } }}
+                />
+              </ListItem>
+            ))}
+          </List>
+        </>
+      )}
+    </Box>
+  );
+};
