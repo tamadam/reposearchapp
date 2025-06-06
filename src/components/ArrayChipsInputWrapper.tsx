@@ -12,9 +12,6 @@ interface ArrayChipsInputWrapperProps<T> {
   maxDisplay?: number;
   maxWidth?: number | string;
   getLabel: (item: T) => React.ReactNode;
-  getKey?: (item: T, index: number) => string | number;
-  validateNewItem?: (item: string, currentItems: T[]) => boolean;
-  transformNewItem?: (input: string) => T;
   error?: boolean;
   helperText?: React.ReactNode;
 }
@@ -24,9 +21,6 @@ const ArrayChipsInputWrapper = <T,>({
   maxDisplay = 5,
   maxWidth = 300,
   getLabel,
-  getKey,
-  validateNewItem,
-  transformNewItem,
   error = false,
   helperText,
 }: ArrayChipsInputWrapperProps<T>) => {
@@ -38,11 +32,7 @@ const ArrayChipsInputWrapper = <T,>({
     const trimmed = inputValue.trim();
     if (!trimmed) return;
 
-    if (validateNewItem && !validateNewItem(trimmed, items)) return;
-
-    const newItem = transformNewItem
-      ? transformNewItem(trimmed)
-      : (trimmed as unknown as T);
+    const newItem = trimmed as T;
 
     if (!items.includes(newItem)) {
       field.onChange([...items, newItem]);
@@ -85,7 +75,6 @@ const ArrayChipsInputWrapper = <T,>({
         items={items}
         onDelete={deleteItem}
         getLabel={getLabel}
-        getKey={getKey}
         maxDisplay={maxDisplay}
         maxWidth={maxWidth}
       />

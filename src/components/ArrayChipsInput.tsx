@@ -7,7 +7,6 @@ interface ArrayChipsInputProps<T> {
   maxDisplay?: number;
   maxWidth?: number | string;
   getLabel: (item: T) => ReactNode;
-  getKey?: (item: T, index: number) => string | number;
 }
 const ArrayChipsInput = <T,>({
   items,
@@ -15,7 +14,6 @@ const ArrayChipsInput = <T,>({
   maxDisplay = 5,
   maxWidth = 300,
   getLabel,
-  getKey,
 }: ArrayChipsInputProps<T>) => {
   const [showAll, setShowAll] = useState(false);
   const [hoveredChip, setHoveredChip] = useState<number | null>(null);
@@ -43,7 +41,7 @@ const ArrayChipsInput = <T,>({
     >
       {displayItems.map((item, index) => (
         <Chip
-          key={getKey ? getKey(item, index) : index}
+          key={index}
           label={
             <Typography variant="body2" component="span">
               {getLabel(item)}

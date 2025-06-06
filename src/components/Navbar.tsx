@@ -88,11 +88,7 @@ const Navbar = () => {
         </Typography>
         <Box>
           {navbarItems.map((navbarItem) => (
-            <WhiteNavLink
-              key={navbarItem.id}
-              to={navbarItem.href}
-              style={{ textDecoration: "none" }}
-            >
+            <WhiteNavLink key={navbarItem.id} to={navbarItem.href}>
               {({ isActive }) => (
                 <Typography
                   variant="button"

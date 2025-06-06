@@ -39,7 +39,6 @@ interface FilterProps {
   name: string;
   label: string;
   type: FilterType;
-  options?: FilterOption[];
   errors: any;
   trigger: any;
 }
@@ -67,11 +66,12 @@ const Filter = ({
   name,
   label,
   type,
-  options = type === "date" ? dateOptions : numericOptions,
   errors,
   trigger,
 }: FilterProps) => {
   const mode = useWatch({ control, name: getFieldPath(name, "mode") });
+
+  const options = type === "date" ? dateOptions : numericOptions;
 
   const handleModeChange = (newMode: NumericFilterMode | DateFilterMode) => {
     setValue(getFieldPath(name, "mode"), newMode);
