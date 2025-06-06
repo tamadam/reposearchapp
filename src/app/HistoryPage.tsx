@@ -44,7 +44,7 @@ const HistoryPage = () => {
         height={Infinity}
         axis="x"
         resizeHandles={["e"]}
-        minConstraints={[200, Infinity]}
+        minConstraints={[300, Infinity]}
         maxConstraints={[600, Infinity]}
         handle={<span style={resizeHandleStyle} />}
       >

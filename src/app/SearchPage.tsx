@@ -1,94 +1,57 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import SearchForm from "../components/SearchForm";
 import SearchResults from "../components/SearchResults";
-import type { OrderValues, SearchResultsType, SortValues } from "../types";
-import { searchRepositories } from "../utils/search";
+import type { OrderValues, SortValues } from "../types";
 import ErrorMessage from "../components/ErrorMessage";
 import type { SearchFormData } from "../formSchema";
 import { buildSearchQuery } from "../utils/buildQuery";
 import { useSearchHistory } from "../stores/searchHistory";
+import { useRepoSearch } from "../hooks/useRepoSearch";
 
 const SearchPage = () => {
   const { addSearch } = useSearchHistory();
 
-  const [results, setResults] = useState<SearchResultsType | null>(null);
-  const [loading, setLoading] = useState<boolean>(false);
-  const [error, setError] = useState<boolean>(false);
-  const [currentPage, setCurrentPage] = useState<number>(1);
   const [searchQuery, setSearchQuery] = useState<string>("");
-
+  const [formData, setFormData] = useState<SearchFormData | null>(null);
+  const [currentPage, setCurrentPage] = useState<number>(1);
   const [sort, setSort] = useState<SortValues>("default");
   const [order, setOrder] = useState<OrderValues>("desc");
 
-  const performSearch = async ({
-    query,
+  const { data, isLoading, isError, refetch } = useRepoSearch(
+    searchQuery,
     sort,
     order,
-    page = 1,
-    formData,
-  }: {
-    query: string;
-    sort: SortValues;
-    order: OrderValues;
-    page?: number;
-    formData?: SearchFormData;
-  }) => {
-    setError(false);
-    setLoading(true);
-    try {
-      const res = await searchRepositories(query, sort, order, page);
+    currentPage,
+    !!searchQuery
+  );
 
-      setResults(res);
-      if (formData) {
-        addSearch(query, formData, res);
-      }
-    } catch (error) {
-      console.error(error);
-      setError(true);
-    } finally {
-      setLoading(false);
+  useEffect(() => {
+    if (data && formData) {
+      addSearch(searchQuery, formData, data);
     }
-  };
+  }, [data, formData, addSearch, searchQuery]);
 
   const handleFormSubmit = (data: SearchFormData) => {
     const query = buildSearchQuery(data);
     setSearchQuery(query);
     setCurrentPage(1);
-    performSearch({
-      query,
-      sort,
-      order,
-      page: 1,
-      formData: data,
-    });
+    setFormData(data);
   };
 
   const handleFormReset = () => {
-    setResults(null);
-    setError(false);
+    setSearchQuery("");
     setCurrentPage(1);
+    setFormData(null);
   };
 
   const handleSortChange = (newSort: SortValues) => {
     setSort(newSort);
     setCurrentPage(1);
-    performSearch({
-      query: searchQuery,
-      sort: newSort,
-      order,
-      page: 1,
-    });
   };
 
   const handleOrderChange = (newOrder: OrderValues) => {
     setOrder(newOrder);
     setCurrentPage(1);
-    performSearch({
-      query: searchQuery,
-      sort,
-      order: newOrder,
-      page: 1,
-    });
   };
 
   return (
@@ -97,20 +60,12 @@ const SearchPage = () => {
         onFormSubmit={handleFormSubmit}
         onFormReset={handleFormReset}
       />
-      {error ? (
-        <ErrorMessage
-          onRetry={() =>
-            performSearch({
-              query: searchQuery,
-              sort,
-              order,
-            })
-          }
-        />
+      {isError ? (
+        <ErrorMessage onRetry={refetch} />
       ) : (
         <SearchResults
-          results={results}
-          loading={loading}
+          results={data}
+          loading={isLoading}
           sort={sort}
           order={order}
           page={currentPage}
@@ -118,12 +73,6 @@ const SearchPage = () => {
           onChangeOrder={handleOrderChange}
           onPageChange={(newPage) => {
             setCurrentPage(newPage);
-            performSearch({
-              query: searchQuery,
-              sort,
-              order,
-              page: newPage,
-            });
           }}
         />
       )}
