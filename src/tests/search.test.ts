@@ -1,9 +1,8 @@
-// tests/searchRepositories.test.ts
 import { searchRepositories } from "../utils/search";
-import { describe, it, expect, beforeEach, vi } from "vitest";
+import { describe, it, expect, beforeEach, vi, type Mock } from "vitest";
 
-global.fetch = vi.fn();
-const mockFetch = fetch as unknown as vi.Mock;
+const mockFetch = vi.fn() as Mock;
+globalThis.fetch = mockFetch;
 
 describe("searchRepositories", () => {
   beforeEach(() => {
